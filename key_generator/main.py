@@ -21,9 +21,6 @@ def generate_credentials():
     generated_key = session.generate_key()
     one_time_password = session.generate_one_time_password()
     counter = session.counter
-    # Write the generated key to a file
-    with open('generated_otp.txt', 'a') as file:
-        file.write(f"{counter}: {generated_key}: {one_time_password}\n")
 
     return jsonify({'success': True}), 200
 
