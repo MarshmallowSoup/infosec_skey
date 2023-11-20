@@ -1,10 +1,14 @@
 from flask import Flask, request, jsonify, redirect, url_for, session
 import requests
+import logging
+import json
 
 
 app = Flask(__name__)
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-VERIFY_CREDENTIALS_URL = 'http://localhost:5000/verify_credentials'
+VERIFY_CREDENTIALS_URL = 'http://key_generator:5000/verify_credentials'
 
 # Set of routes that do not require authentication
 # Add more routes to this set as needed
@@ -18,7 +22,7 @@ def is_authenticated():
 @app.before_request
 def check_authentication():
     # Skip authentication check for public routes
-    if request.endpoint in PUBLIC_ROUTES or request.endpoint.startswith('static'):
+    if request.endpoint != '/login':
         return
 
     # Check if the user is authenticated
@@ -36,8 +40,15 @@ def login():
     # Get the password from the request
     password = request.form.get('password')
 
+    data = {
+        "pass": password
+    }
+    headers = {
+        "Content-Type": "application/json"
+    }
+
     # Validate the password by making a request to the verification endpoint
-    verification_response = requests.post(VERIFY_CREDENTIALS_URL, data={'pass': password})
+    verification_response = requests.post(VERIFY_CREDENTIALS_URL, data=json.dumps(data), headers=headers)
 
     # Check if the verification was successful
     if verification_response.status_code == 200:
@@ -45,6 +56,5 @@ def login():
     else:
         return 'Login failed. Invalid credentials.'
     
-
 if __name__ == '__main__':
-    app.run(port=8000)
+    app.run(host='0.0.0.0', port=8000)

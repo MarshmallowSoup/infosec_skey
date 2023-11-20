@@ -1,0 +1,16 @@
+version: '3'
+services:
+  flask-app:
+    build:
+      context: ./server
+
+    ports:
+      - "8000:8000"
+    depends_on:
+      - key_generator
+
+  key_generator:
+    build:
+      context: ./key_generator
+    ports:
+      - "5000:5000"

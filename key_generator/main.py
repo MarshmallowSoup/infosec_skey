@@ -40,7 +40,7 @@ def authenticate():
     data = request.get_json()
     received_otp = data.get('pass')
 
-    expected_otp = session.generate_one_time_password()[:6]
+    expected_otp = session.generate_one_time_password()
 
     if received_otp == expected_otp:
         # Authentication successful
@@ -52,11 +52,11 @@ def authenticate():
     
 
 @app.route('/verify_credentials', methods=['POST'])
-def authenticate():
+def verify_credentials():
     data = request.get_json()
     received_otp = data.get('pass')
 
-    expected_otp = session.generate_one_time_password()[:6]
+    expected_otp = session.generate_one_time_password()
 
     if received_otp == expected_otp:
         # Authentication successful
@@ -66,5 +66,11 @@ def authenticate():
         return jsonify({'success': False}), 401
 
 
+@app.route('/delete_session', methods=['POST'])
+def delete_session():
+    session.reset()
+    return jsonify({'success': True}), 200
+
+
 if __name__ == '__main__':
-    app.run(port=5000)
+    app.run(host='0.0.0.0', port=5000)
